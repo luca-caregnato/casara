@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LA CASARA - Pianificazione</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #2c4a3e;
+            --accent-color: #8c6d46;
+            --sweet-primary: #b85d79;
+            --sweet-accent: #d97b93;
+            --sweet-bg: rgba(255, 248, 250, 0.95);
+            --sweet-item-bg: #fff3f6;
+            --card-bg: rgba(255, 255, 255, 0.94);
+            --text-color: #222222;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(rgba(15, 24, 20, 0.45), rgba(15, 24, 20, 0.55)), url('IMG-20251221-WA0013.jpg') center center / cover no-repeat fixed;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* --- MENU IN ALTO --- */
+        .navbar {
+            background-color: rgba(28, 48, 40, 0.92);
+            backdrop-filter: blur(6px);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .navbar a:hover,
+        .navbar a.active {
+            background-color: var(--accent-color);
+        }
+
+        /* --- TITOLO IN ALTO --- */
+        header {
+            color: white;
+            text-align: center;
+            padding: 45px 20px 55px 20px;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65);
+        }
+
+        header h1 {
+            font-size: 3.2rem;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 1.15rem;
+            font-weight: 400;
+        }
+
+        /* --- LAYOUT PRINCIPALE --- */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto 40px auto;
+            padding: 0 20px;
+        }
+
+        .auth-card {
+            margin-bottom: 30px;
+        }
+
+        .auth-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .auth-row input {
+            flex: 1 1 180px;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #ffffff;
+        }
+
+        .btn-login {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-login:hover {
+            background-color: #1e332b;
+        }
+
+        .btn-logout {
+            background-color: #8b2e2e;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-logout:hover {
+            background-color: #6b2121;
+        }
+
+        .auth-status {
+            margin-top: 10px;
+            font-size: 0.92rem;
+            color: #444;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* --- CARDS --- */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(6px);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* --- CARD DOLCETTI CUTE --- */
+        .card.sweet-card {
+            background: var(--sweet-bg);
+            border: 2px solid #ffd6e2;
+            border-radius: 20px;
+        }
+
+        .card.sweet-card h2 {
+            color: var(--sweet-primary);
+            border-bottom-color: #ffe3ec;
+        }
+
+        .sweet-card .input-group input:focus {
+            outline: none;
+            border-color: var(--sweet-accent);
+            box-shadow: 0 0 0 3px rgba(217, 123, 147, 0.2);
+        }
+
+        .sweet-card .btn-add {
+            background-color: var(--sweet-accent);
+            border-radius: 12px;
+        }
+
+        .sweet-card .btn-add:hover {
+            background-color: var(--sweet-primary);
+        }
+
+        .sweet-card ul.shopping-list li {
+            background-color: var(--sweet-item-bg);
+            border-radius: 14px;
+            border-left: none;
+            border: 1px solid #ffd6e2;
+            box-shadow: 0 3px 10px rgba(217, 123, 147, 0.08);
+        }
+
+        .sweet-card ul.shopping-list li.completed {
+            background-color: #f7eff2;
+            border-color: #e6d5db;
+        }
+
+        /* --- FORM PIANIFICAZIONE --- */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #ffffff;
+        }
+
+        button.btn-main {
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button.btn-main:hover {
+            background-color: #1e332b;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .trip-summary {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #eef3f0;
+            border-left: 4px solid var(--primary-color);
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        /* --- LISTE (SPESA & DOLCETTI) --- */
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #ffffff;
+        }
+
+        .btn-add {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .btn-add:hover {
+            background-color: #6e5434;
+        }
+
+        ul.shopping-list {
+            list-style: none;
+        }
+
+        ul.shopping-list li {
+            background-color: #f9f9f9;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--accent-color);
+            transition: all 0.2s;
+        }
+
+        ul.shopping-list li.completed {
+            text-decoration: line-through;
+            opacity: 0.6;
+            border-left-color: #ccc;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-check, .btn-delete {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        .btn-check { color: #2e7d32; }
+        .btn-delete { color: #c62828; }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 0.9rem;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="active">Pianificazione</a>
+        <a href="galleria.html">Galleria</a>
+    </nav>
+
+    <header>
+        <h1>LA CASARA</h1>
+        <p>Pianifica i tuoi soggiorni in quota & organizza le provviste</p>
+    </header>
+
+    <div class="container">
+
+        <!-- ACCESSO RISERVATO AI 6 MEMBRI -->
+        <section class="card auth-card">
+            <h2>🔐 Accesso Membri</h2>
+
+            <form id="loginForm" class="auth-row">
+                <input type="text" id="usernameInput" placeholder="Username (es. luca, pietro, davide...)" required>
+                <input type="password" id="passwordInput" placeholder="Password" required>
+                <button type="submit" id="loginBtn" class="btn-login">Accedi</button>
+            </form>
+
+            <div id="loggedInBar" class="auth-row" style="display: none;">
+                <span id="currentUserLabel" style="font-weight: 600;"></span>
+                <button type="button" id="logoutBtn" class="btn-logout">Esci</button>
+            </div>
+
+            <p id="authStatus" class="auth-status">
+                Solo i 6 membri autorizzati possono modificare soggiorno e liste.
+            </p>
+        </section>
+
+        <div class="grid-container">
+
+            <section class="card">
+                <h2>🌲 Dettagli Soggiorno</h2>
+                <form id="tripForm">
+                    <div class="form-group">
+                        <label for="casaraName">Nome della Casara/Baita</label>
+                        <input type="text" id="casaraName" placeholder="es. Casara in quota" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="checkIn">Data Arrivo</label>
+                        <input type="date" id="checkIn" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="checkOut">Data Partenza</label>
+                        <input type="date" id="checkOut" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="people">Numero Partecipanti</label>
+                        <input type="number" id="people" min="1" value="6" required>
+                    </div>
+
+                    <button type="submit" id="saveTripBtn" class="btn-main">Salva Soggiorno</button>
+                </form>
+
+                <div id="tripSummary" class="trip-summary"></div>
+            </section>
+
+            <section class="card">
+                <h2>🛒 Lista della Spesa</h2>
+                <p style="margin-bottom: 15px; font-size: 0.9rem; color: #555;">
+                    Aggiungi le provviste essenziali per la permanenza in casara (es. legna, pasta, formaggio, polenta).
+                </p>
+
+                <div class="input-group">
+                    <input type="text" id="productInput" placeholder="Inserisci il nome del prodotto...">
+                    <button type="button" id="addProductBtn" class="btn-add">Aggiungi</button>
+                </div>
+
+                <ul class="shopping-list" id="shoppingList"></ul>
+            </section>
+
+            <section class="card sweet-card">
+                <h2>🧁 Lista dei dolcetti</h2>
+                <p style="margin-bottom: 15px; font-size: 0.9rem; color: #8a4b60;">
+                    Segna qui tutte le coccole dolci da portare in baita (es. biscotti, crostate, cioccolato, marshmallow). ♡
+                </p>
+
+                <div class="input-group">
+                    <input type="text" id="sweetInput" placeholder="Aggiungi un dolcetto puccioso...">
+                    <button type="button" id="addSweetBtn" class="btn-add">Aggiungi</button>
+                </div>
+
+                <ul class="shopping-list" id="sweetList"></ul>
+            </section>
+
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; LA CASARA - Gestione Vacanze in Montagna</p>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import {
+            getFirestore,
+            doc,
+            setDoc,
+            addDoc,
+            updateDoc,
+            deleteDoc,
+            collection,
+            onSnapshot,
+            query,
+            orderBy,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDyr0lzyANCRiEKVqnH9cusgew7OroKzM0",
+            authDomain: "casara-f6f64.firebaseapp.com",
+            projectId: "casara-f6f64",
+            storageBucket: "casara-f6f64.firebasestorage.app",
+            messagingSenderId: "843238486456",
+            appId: "1:843238486456:web:d90f07ed651209d6d19f4d",
+            measurementId: "G-MBKMHPTXV0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Mappa username -> email creata in Firebase Authentication
+        const USER_EMAIL_MAP = {
+            "pietro": "pietro@casara.local",
+            "benedetto": "benedetto@casara.local",
+            "davide": "davide@casara.local",
+            "luca": "luca@casara.local",
+            "francesco": "francesco@casara.local",
+            "dante": "dante@casara.local"
+        };
+
+        let currentUser = null;
+
+        const loginForm = document.getElementById("loginForm");
+        const loggedInBar = document.getElementById("loggedInBar");
+        const currentUserLabel = document.getElementById("currentUserLabel");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const authStatus = document.getElementById("authStatus");
+
+        const saveTripBtn = document.getElementById("saveTripBtn");
+        const addProductBtn = document.getElementById("addProductBtn");
+        const addSweetBtn = document.getElementById("addSweetBtn");
+        const productInput = document.getElementById("productInput");
+        const sweetInput = document.getElementById("sweetInput");
+
+        function resolveLoginEmail(rawInput) {
+            const clean = rawInput.trim().toLowerCase();
+            if (clean.includes("@")) return clean;
+            if (USER_EMAIL_MAP[clean]) return USER_EMAIL_MAP[clean];
+            return `${clean}@casara.local`;
+        }
+
+        function formatDisplayName(email) {
+            if (!email) return "";
+            const prefix = email.split("@")[0];
+            return prefix.charAt(0).toUpperCase() + prefix.slice(1);
+        }
+
+        function setEditingEnabled(enabled) {
+            saveTripBtn.disabled = !enabled;
+            addProductBtn.disabled = !enabled;
+            addSweetBtn.disabled = !enabled;
+            productInput.disabled = !enabled;
+            sweetInput.disabled = !enabled;
+
+            document.querySelectorAll(".btn-check, .btn-delete").forEach(btn => {
+                btn.disabled = !enabled;
+            });
+        }
+
+        function requireAuth() {
+            if (!currentUser) {
+                authStatus.textContent = "Devi effettuare il login con uno dei 6 account per modificare i dati.";
+                return false;
+            }
+            return true;
+        }
+
+        // Login
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const userInput = document.getElementById("usernameInput").value;
+            const password = document.getElementById("passwordInput").value;
+            const email = resolveLoginEmail(userInput);
+
+            try {
+                authStatus.textContent = "Accesso in corso...";
+                await signInWithEmailAndPassword(auth, email, password);
+                document.getElementById("passwordInput").value = "";
+            } catch (err) {
+                authStatus.textContent = "Credenziali non valide. Controlla username e password.";
+            }
+        });
+
+        // Logout
+        logoutBtn.addEventListener("click", async () => {
+            await signOut(auth);
+        });
+
+        // Stato autenticazione
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (user) {
+                loginForm.style.display = "none";
+                loggedInBar.style.display = "flex";
+                currentUserLabel.textContent = `Connesso come: ${formatDisplayName(user.email)}`;
+                authStatus.textContent = "Hai i permessi per modificare soggiorno e liste.";
+                setEditingEnabled(true);
+            } else {
+                loginForm.style.display = "flex";
+                loggedInBar.style.display = "none";
+                currentUserLabel.textContent = "";
+                authStatus.textContent = "Modalità sola lettura: accedi per aggiungere o modificare elementi.";
+                setEditingEnabled(false);
+            }
+        });
+
+        // Salvataggio soggiorno su Firestore
+        document.getElementById("tripForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (!requireAuth()) return;
+
+            const nome = document.getElementById("casaraName").value.trim();
+            const arrivo = document.getElementById("checkIn").value;
+            const partenza = document.getElementById("checkOut").value;
+            const partecipanti = Number(document.getElementById("people").value);
+
+            try {
+                await setDoc(doc(db, "casara", "currentTrip"), {
+                    casaraName: nome,
+                    checkIn: arrivo,
+                    checkOut: partenza,
+                    people: partecipanti,
+                    updatedBy: currentUser.email,
+                    updatedAt: serverTimestamp()
+                });
+                authStatus.textContent = `Soggiorno "${nome}" salvato sul database.`;
+            } catch (err) {
+                authStatus.textContent = "Errore nel salvataggio: verifica i permessi su Firestore.";
+            }
+        });
+
+        // Ascolto in tempo reale dettagli soggiorno
+        onSnapshot(doc(db, "casara", "currentTrip"), (snap) => {
+            if (!snap.exists()) return;
+            const data = snap.data();
+
+            document.getElementById("casaraName").value = data.casaraName || "";
+            document.getElementById("checkIn").value = data.checkIn || "";
+            document.getElementById("checkOut").value = data.checkOut || "";
+            document.getElementById("people").value = data.people || 6;
+
+            const summary = document.getElementById("tripSummary");
+            summary.style.display = "block";
+            summary.innerHTML = `
+                <strong>Soggiorno impostato:</strong> ${data.casaraName || ""}<br>
+                <strong>Dal:</strong> ${data.checkIn || ""} &nbsp;|&nbsp; <strong>Al:</strong> ${data.checkOut || ""}<br>
+                <strong>Partecipanti:</strong> ${data.people || ""}
+            `;
+        });
+
+        // Aggiunta elemento a una collezione Firestore
+        async function addListItem(collectionName, inputEl, emptyMsg) {
+            if (!requireAuth()) return;
+            const text = inputEl.value.trim();
+            if (!text) {
+                alert(emptyMsg);
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, collectionName), {
+                    text,
+                    completed: false,
+                    createdBy: currentUser.email,
+                    createdAt: serverTimestamp()
+                });
+                inputEl.value = "";
+                inputEl.focus();
+            } catch (err) {
+                authStatus.textContent = "Errore nell'aggiunta: verifica i permessi su Firestore.";
+            }
+        }
+
+        addProductBtn.addEventListener("click", () => {
+            addListItem("shoppingItems", productInput, "Inserisci il nome di un prodotto!");
+        });
+
+        productInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                addListItem("shoppingItems", productInput, "Inserisci il nome di un prodotto!");
+            }
+        });
+
+        addSweetBtn.addEventListener("click", () => {
+            addListItem("sweetItems", sweetInput, "Inserisci il nome di un dolcetto!");
+        });
+
+        sweetInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                addListItem("sweetItems", sweetInput, "Inserisci il nome di un dolcetto!");
+            }
+        });
+
+        // Rendering e sincronizzazione in tempo reale di una lista
+        function subscribeList(collectionName, listElementId, isSweet) {
+            const q = query(collection(db, collectionName), orderBy("createdAt", "asc"));
+            onSnapshot(q, (snapshot) => {
+                const listEl = document.getElementById(listElementId);
+                listEl.innerHTML = "";
+
+                snapshot.forEach((docSnap) => {
+                    const item = docSnap.data();
+                    const li = document.createElement("li");
+                    if (item.completed) li.classList.add("completed");
+
+                    const span = document.createElement("span");
+                    span.textContent = isSweet ? `♡ ${item.text}` : item.text;
+                    li.appendChild(span);
+
+                    const actionsDiv = document.createElement("div");
+                    actionsDiv.className = "actions";
+
+                    const checkBtn = document.createElement("button");
+                    checkBtn.innerHTML = "✓";
+                    checkBtn.className = "btn-check";
+                    checkBtn.title = "Segna come preso";
+                    checkBtn.disabled = !currentUser;
+                    checkBtn.onclick = async () => {
+                        if (!requireAuth()) return;
+                        await updateDoc(doc(db, collectionName, docSnap.id), {
+                            completed: !item.completed
+                        });
+                    };
+
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.innerHTML = "🗑️";
+                    deleteBtn.className = "btn-delete";
+                    deleteBtn.title = "Rimuovi";
+                    deleteBtn.disabled = !currentUser;
+                    deleteBtn.onclick = async () => {
+                        if (!requireAuth()) return;
+                        await deleteDoc(doc(db, collectionName, docSnap.id));
+                    };
+
+                    actionsDiv.appendChild(checkBtn);
+                    actionsDiv.appendChild(deleteBtn);
+                    li.appendChild(actionsDiv);
+                    listEl.appendChild(li);
+                });
+            });
+        }
+
+        subscribeList("shoppingItems", "shoppingList", false);
+        subscribeList("sweetItems", "sweetList", true);
+
+        setEditingEnabled(false);
+    </script>
+</body>
+</html>
