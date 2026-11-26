@@ -231,6 +231,12 @@
             background: #ffffff;
         }
 
+        input:disabled {
+            background-color: #ecefed;
+            color: #666;
+            cursor: not-allowed;
+        }
+
         button.btn-main {
             width: 100%;
             background-color: var(--primary-color);
@@ -380,25 +386,25 @@
                 <form id="tripForm">
                     <div class="form-group">
                         <label for="casaraName">Nome della Casara/Baita</label>
-                        <input type="text" id="casaraName" placeholder="es. Casara in quota" required>
+                        <input type="text" id="casaraName" placeholder="es. Casara in quota" required disabled>
                     </div>
 
                     <div class="form-group">
                         <label for="checkIn">Data Arrivo</label>
-                        <input type="date" id="checkIn" required>
+                        <input type="date" id="checkIn" required disabled>
                     </div>
 
                     <div class="form-group">
                         <label for="checkOut">Data Partenza</label>
-                        <input type="date" id="checkOut" required>
+                        <input type="date" id="checkOut" required disabled>
                     </div>
 
                     <div class="form-group">
                         <label for="people">Numero Partecipanti</label>
-                        <input type="number" id="people" min="1" value="6" required>
+                        <input type="number" id="people" min="1" value="6" required disabled>
                     </div>
 
-                    <button type="submit" id="saveTripBtn" class="btn-main">Salva Soggiorno</button>
+                    <button type="submit" id="saveTripBtn" class="btn-main" disabled>Salva Soggiorno</button>
                 </form>
 
                 <div id="tripSummary" class="trip-summary"></div>
@@ -411,8 +417,8 @@
                 </p>
 
                 <div class="input-group">
-                    <input type="text" id="productInput" placeholder="Inserisci il nome del prodotto...">
-                    <button type="button" id="addProductBtn" class="btn-add">Aggiungi</button>
+                    <input type="text" id="productInput" placeholder="Inserisci il nome del prodotto..." disabled>
+                    <button type="button" id="addProductBtn" class="btn-add" disabled>Aggiungi</button>
                 </div>
 
                 <ul class="shopping-list" id="shoppingList"></ul>
@@ -425,8 +431,8 @@
                 </p>
 
                 <div class="input-group">
-                    <input type="text" id="sweetInput" placeholder="Aggiungi un dolcetto puccioso...">
-                    <button type="button" id="addSweetBtn" class="btn-add">Aggiungi</button>
+                    <input type="text" id="sweetInput" placeholder="Aggiungi un dolcetto puccioso..." disabled>
+                    <button type="button" id="addSweetBtn" class="btn-add" disabled>Aggiungi</button>
                 </div>
 
                 <ul class="shopping-list" id="sweetList"></ul>
@@ -475,7 +481,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Mappa username -> email creata in Firebase Authentication
         const USER_EMAIL_MAP = {
             "pietro": "pietro@casara.local",
             "benedetto": "benedetto@casara.local",
@@ -493,7 +498,12 @@
         const logoutBtn = document.getElementById("logoutBtn");
         const authStatus = document.getElementById("authStatus");
 
+        const casaraNameInput = document.getElementById("casaraName");
+        const checkInInput = document.getElementById("checkIn");
+        const checkOutInput = document.getElementById("checkOut");
+        const peopleInput = document.getElementById("people");
         const saveTripBtn = document.getElementById("saveTripBtn");
+
         const addProductBtn = document.getElementById("addProductBtn");
         const addSweetBtn = document.getElementById("addSweetBtn");
         const productInput = document.getElementById("productInput");
@@ -513,7 +523,12 @@
         }
 
         function setEditingEnabled(enabled) {
+            casaraNameInput.disabled = !enabled;
+            checkInInput.disabled = !enabled;
+            checkOutInput.disabled = !enabled;
+            peopleInput.disabled = !enabled;
             saveTripBtn.disabled = !enabled;
+
             addProductBtn.disabled = !enabled;
             addSweetBtn.disabled = !enabled;
             productInput.disabled = !enabled;
@@ -532,7 +547,6 @@
             return true;
         }
 
-        // Login
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             const userInput = document.getElementById("usernameInput").value;
@@ -548,12 +562,10 @@
             }
         });
 
-        // Logout
         logoutBtn.addEventListener("click", async () => {
             await signOut(auth);
         });
 
-        // Stato autenticazione
         onAuthStateChanged(auth, (user) => {
             currentUser = user;
             if (user) {
@@ -571,15 +583,14 @@
             }
         });
 
-        // Salvataggio soggiorno su Firestore
         document.getElementById("tripForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             if (!requireAuth()) return;
 
-            const nome = document.getElementById("casaraName").value.trim();
-            const arrivo = document.getElementById("checkIn").value;
-            const partenza = document.getElementById("checkOut").value;
-            const partecipanti = Number(document.getElementById("people").value);
+            const nome = casaraNameInput.value.trim();
+            const arrivo = checkInInput.value;
+            const partenza = checkOutInput.value;
+            const partecipanti = Number(peopleInput.value);
 
             try {
                 await setDoc(doc(db, "casara", "currentTrip"), {
@@ -596,15 +607,14 @@
             }
         });
 
-        // Ascolto in tempo reale dettagli soggiorno
         onSnapshot(doc(db, "casara", "currentTrip"), (snap) => {
             if (!snap.exists()) return;
             const data = snap.data();
 
-            document.getElementById("casaraName").value = data.casaraName || "";
-            document.getElementById("checkIn").value = data.checkIn || "";
-            document.getElementById("checkOut").value = data.checkOut || "";
-            document.getElementById("people").value = data.people || 6;
+            casaraNameInput.value = data.casaraName || "";
+            checkInInput.value = data.checkIn || "";
+            checkOutInput.value = data.checkOut || "";
+            peopleInput.value = data.people || 6;
 
             const summary = document.getElementById("tripSummary");
             summary.style.display = "block";
@@ -615,7 +625,6 @@
             `;
         });
 
-        // Aggiunta elemento a una collezione Firestore
         async function addListItem(collectionName, inputEl, emptyMsg) {
             if (!requireAuth()) return;
             const text = inputEl.value.trim();
@@ -660,7 +669,6 @@
             }
         });
 
-        // Rendering e sincronizzazione in tempo reale di una lista
         function subscribeList(collectionName, listElementId, isSweet) {
             const q = query(collection(db, collectionName), orderBy("createdAt", "asc"));
             onSnapshot(q, (snapshot) => {
