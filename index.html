@@ -237,6 +237,12 @@
             cursor: not-allowed;
         }
 
+        .trip-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
         button.btn-main {
             width: 100%;
             background-color: var(--primary-color);
@@ -251,6 +257,23 @@
 
         button.btn-main:hover {
             background-color: #1e332b;
+        }
+
+        button.btn-danger {
+            width: 100%;
+            background-color: #9e2a2b;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button.btn-danger:hover {
+            background-color: #781d1e;
         }
 
         button:disabled {
@@ -354,7 +377,7 @@
 
     <header>
         <h1>LA CASARA</h1>
-        <p>Pianifica i tuoi soggiorni in quota & organizza le provviste</p>
+        <p>Siamo carichi per la casara 2k26?</p>
     </header>
 
     <div class="container">
@@ -404,7 +427,10 @@
                         <input type="number" id="people" min="1" value="6" required disabled>
                     </div>
 
-                    <button type="submit" id="saveTripBtn" class="btn-main" disabled>Salva Soggiorno</button>
+                    <div class="trip-actions">
+                        <button type="submit" id="saveTripBtn" class="btn-main" disabled>Salva Soggiorno</button>
+                        <button type="button" id="deleteTripBtn" class="btn-danger" disabled>Elimina Soggiorno</button>
+                    </div>
                 </form>
 
                 <div id="tripSummary" class="trip-summary"></div>
@@ -413,7 +439,7 @@
             <section class="card">
                 <h2>🛒 Lista della Spesa</h2>
                 <p style="margin-bottom: 15px; font-size: 0.9rem; color: #555;">
-                    Aggiungi le provviste essenziali per la permanenza in casara (es. legna, pasta, formaggio, polenta).
+                    Aggiungi gli elementi della lista della spesa.
                 </p>
 
                 <div class="input-group">
@@ -427,7 +453,7 @@
             <section class="card sweet-card">
                 <h2>🧁 Lista dei dolcetti</h2>
                 <p style="margin-bottom: 15px; font-size: 0.9rem; color: #8a4b60;">
-                    Segna qui tutte le coccole dolci da portare in baita (es. biscotti, crostate, cioccolato, marshmallow). ♡
+                    Segna qui quante cose a persona volete portare (cose molto cuct). ♡
                 </p>
 
                 <div class="input-group">
@@ -503,6 +529,8 @@
         const checkOutInput = document.getElementById("checkOut");
         const peopleInput = document.getElementById("people");
         const saveTripBtn = document.getElementById("saveTripBtn");
+        const deleteTripBtn = document.getElementById("deleteTripBtn");
+        const tripSummary = document.getElementById("tripSummary");
 
         const addProductBtn = document.getElementById("addProductBtn");
         const addSweetBtn = document.getElementById("addSweetBtn");
@@ -528,6 +556,7 @@
             checkOutInput.disabled = !enabled;
             peopleInput.disabled = !enabled;
             saveTripBtn.disabled = !enabled;
+            deleteTripBtn.disabled = !enabled;
 
             addProductBtn.disabled = !enabled;
             addSweetBtn.disabled = !enabled;
@@ -607,18 +636,37 @@
             }
         });
 
-        onSnapshot(doc(db, "casara", "currentTrip"), (snap) => {
-            if (!snap.exists()) return;
-            const data = snap.data();
+        deleteTripBtn.addEventListener("click", async () => {
+            if (!requireAuth()) return;
+            if (!confirm("Vuoi davvero eliminare il soggiorno salvato?")) return;
 
+            try {
+                await deleteDoc(doc(db, "casara", "currentTrip"));
+                authStatus.textContent = "Soggiorno eliminato dal database.";
+            } catch (err) {
+                authStatus.textContent = "Errore nell'eliminazione: verifica i permessi su Firestore.";
+            }
+        });
+
+        onSnapshot(doc(db, "casara", "currentTrip"), (snap) => {
+            if (!snap.exists()) {
+                casaraNameInput.value = "";
+                checkInInput.value = "";
+                checkOutInput.value = "";
+                peopleInput.value = 6;
+                tripSummary.style.display = "none";
+                tripSummary.innerHTML = "";
+                return;
+            }
+
+            const data = snap.data();
             casaraNameInput.value = data.casaraName || "";
             checkInInput.value = data.checkIn || "";
             checkOutInput.value = data.checkOut || "";
             peopleInput.value = data.people || 6;
 
-            const summary = document.getElementById("tripSummary");
-            summary.style.display = "block";
-            summary.innerHTML = `
+            tripSummary.style.display = "block";
+            tripSummary.innerHTML = `
                 <strong>Soggiorno impostato:</strong> ${data.casaraName || ""}<br>
                 <strong>Dal:</strong> ${data.checkIn || ""} &nbsp;|&nbsp; <strong>Al:</strong> ${data.checkOut || ""}<br>
                 <strong>Partecipanti:</strong> ${data.people || ""}
